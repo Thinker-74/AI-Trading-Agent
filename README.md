@@ -1,4 +1,4 @@
-# ai-trading-agent
+# AI-Trading-Agent
 
 AI trading agent for Capital.com demo-first execution, with modular decision engine, forecasting, logging, and future multi-broker support.
 
