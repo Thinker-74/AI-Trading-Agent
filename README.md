@@ -1,6 +1,6 @@
 # AI-Trading-Agent
 
-AI trading agent for Capital.com demo-first execution, with modular decision engine, forecasting, logging, and future multi-broker support.
+AI trading agent that analyzes markets, generates signals, and sends them to [Autotrade](https://github.com/Thinker-74/Autotrade) for execution via webhook. No direct broker access — Autotrade handles Capital.com, Binance, MT4.
 
 ## Architecture
 
@@ -10,23 +10,21 @@ AI trading agent for Capital.com demo-first execution, with modular decision eng
 │  Collector  │    │  Engine      │    │  (LLM)      │
 └─────────────┘    └──────────────┘    └──────┬──────┘
                                               │
-┌─────────────┐    ┌──────────────┐           │
-│  Dashboard  │<───│  Database    │<──────────┘
-│  (locale)   │    │  (PostgreSQL)│
-└─────────────┘    └──────────────┘
-                          │
-                   ┌──────┴──────┐
-                   │ Broker      │
-                   │ Adapter     │
-                   │ Layer       │
-                   └──────┬──────┘
-                          │
-              ┌───────────┼───────────┐
-              │                       │
-       ┌──────┴──────┐       ┌───────┴─────┐
-       │ Capital.com │       │  Binance    │
-       │ (active)    │       │  (phase 2)  │
-       └─────────────┘       └─────────────┘
+┌─────────────┐    ┌──────────────┐    ┌──────┴──────┐
+│  Dashboard  │<───│  Database    │<───│  Signal     │
+│  (locale)   │    │  (PostgreSQL)│    │  Sender     │
+└─────────────┘    └──────────────┘    └──────┬──────┘
+                                              │
+                                     POST /webhook/signal
+                                              │
+                                       ┌──────┴──────┐
+                                       │  Autotrade  │
+                                       │  (external) │
+                                       └──────┬──────┘
+                                              │
+                              ┌───────────────┼───────────────┐
+                              │               │               │
+                       Capital.com       Binance           MT4
 ```
 
 ## Setup
@@ -43,13 +41,24 @@ cp .env.example .env
 
 | Variable | Description |
 |----------|-------------|
-| `CAPITAL_API_KEY` | Capital.com API key |
-| `CAPITAL_API_PASSWORD` | Capital.com API password |
-| `CAPITAL_IDENTIFIER` | Capital.com account identifier |
-| `CAPITAL_DEMO` | Use demo environment (default: `true`) |
+| `AUTOTRADE_WEBHOOK_URL` | Autotrade webhook endpoint (default: `http://ollasrv:8080/webhook/signal`) |
 | `DATABASE_URL` | PostgreSQL connection string |
 | `OPENAI_API_KEY` | OpenAI API key |
 | `ANTHROPIC_API_KEY` | Anthropic API key |
+
+## Signal Format
+
+```json
+{
+  "symbol": "XAUUSD",
+  "direction": "BUY",
+  "entry_price": 2650.50,
+  "stop_loss": 2640.00,
+  "take_profits": [2660.00, 2670.00, 2680.00]
+}
+```
+
+All fields except `symbol` and `direction` are optional. Autotrade handles symbol mapping, position splitting, and broker routing.
 
 ## Test
 

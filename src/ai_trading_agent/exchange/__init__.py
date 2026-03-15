@@ -1,23 +1,8 @@
-"""Modulo broker adapter — interfaccia astratta e implementazioni concrete."""
+"""Modulo exchange — invio segnali di trading al broker Autotrade."""
 
-from .base import (
-    AccountBalance,
-    ExchangeBase,
-    Instrument,
-    Order,
-    OrderSide,
-    OrderType,
-    Position,
-)
-from .capital_client import CapitalClient
+from .signal_sender import SignalPayload, SignalSender
 
 __all__ = [
-    "AccountBalance",
-    "CapitalClient",
-    "ExchangeBase",
-    "Instrument",
-    "Order",
-    "OrderSide",
-    "OrderType",
-    "Position",
+    "SignalPayload",
+    "SignalSender",
 ]

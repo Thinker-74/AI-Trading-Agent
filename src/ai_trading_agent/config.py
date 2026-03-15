@@ -15,23 +15,12 @@ load_dotenv(_env_path)
 class Settings:
     app_name: str = "ai-trading-agent"
 
-    # Capital.com
-    capital_api_key: str = field(default_factory=lambda: os.getenv("CAPITAL_API_KEY", ""))
-    capital_api_password: str = field(
-        default_factory=lambda: os.getenv("CAPITAL_API_PASSWORD", "")
+    # Autotrade webhook
+    autotrade_webhook_url: str = field(
+        default_factory=lambda: os.getenv(
+            "AUTOTRADE_WEBHOOK_URL", "http://ollasrv:8080/webhook/signal"
+        )
     )
-    capital_identifier: str = field(
-        default_factory=lambda: os.getenv("CAPITAL_IDENTIFIER", "")
-    )
-    capital_demo: bool = field(
-        default_factory=lambda: os.getenv("CAPITAL_DEMO", "true").lower() == "true"
-    )
-
-    @property
-    def capital_base_url(self) -> str:
-        if self.capital_demo:
-            return "https://demo-api-capital.backend-capital.com"
-        return "https://api-capital.backend-capital.com"
 
     # Database
     database_url: str = field(

@@ -1,7 +1,7 @@
 [project]
 name = "ai-trading-agent"
 version = "0.1.0"
-description = "AI trading agent for Capital.com demo-first execution, with modular decision engine, forecasting, logging, and future multi-broker support."
+description = "AI trading agent that generates signals and sends them to Autotrade for execution via webhook."
 requires-python = ">=3.11"
 dependencies = [
     "psycopg2-binary",

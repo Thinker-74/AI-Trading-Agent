@@ -1,12 +1,13 @@
 # ai-trading-agent
 
 ## Panoramica
-Agente AI di trading con architettura multi-broker (Capital.com demo-first), raccolta dati, forecasting, decisione LLM, persistenza su database e dashboard locale. Binance previsto come fase 2.
+Agente AI di trading che analizza mercati, genera segnali e li invia al broker di esecuzione Autotrade via webhook. L'agente non esegue ordini direttamente — delega l'esecuzione ad Autotrade che gestisce Capital.com, Binance, MT4.
 
 ## Stack
 - Python 3.11+
 - PostgreSQL (persistenza)
-- Capital.com REST API via httpx (broker primario, demo-first)
+- httpx (invio segnali via webhook)
+- Autotrade (broker di esecuzione, repo separato)
 - Provider LLM multipli (decisione)
 - pytest + ruff (test e linting)
 
@@ -50,6 +51,7 @@ ruff format src/ tests/
 5. **Lezioni apprese** — dopo ogni correzione dell'utente, aggiornare `tasks/lessons.md`
 6. **Nessuna credenziale** in file versionati — solo in `.env` (gitignored)
 7. **Separazione moduli** — mantenere separati: decision engine, exchange execution, data providers, forecasting
+8. **Nessun accesso diretto ai broker** — tutti gli ordini passano via Autotrade webhook
 
 ## Moduli architetturali
 ```
@@ -61,9 +63,14 @@ src/ai_trading_agent/
 ├── indicators/        # Indicatori tecnici
 ├── forecasting/       # Modelli di previsione
 ├── strategy/          # Prompt builder + decision schema JSON
-├── exchange/          # Broker adapter layer (Capital.com, Binance fase 2)
-│   ├── base.py        # Interfaccia astratta ExchangeBase
-│   └── capital_client.py  # Adapter Capital.com
+├── exchange/          # Signal sender → Autotrade webhook
+│   └── signal_sender.py  # POST /webhook/signal
 ├── storage/           # Persistenza PostgreSQL
 └── dashboard/         # Dashboard locale
 ```
+
+## Integrazione Autotrade
+- Webhook: `POST /webhook/signal` su `http://ollasrv:8080`
+- Payload: `{symbol, direction, entry_price?, stop_loss?, take_profits?}`
+- Autotrade gestisce: routing broker, symbol mapping, split posizioni, esecuzione
+- Repo: https://github.com/Thinker-74/Autotrade

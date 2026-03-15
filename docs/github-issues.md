@@ -1,17 +1,17 @@
-# GitHub Issues — Roadmap Capital.com-first
+# GitHub Issues — AI Trading Agent Roadmap
 
-## Issue #1: Broker adapter layer e Capital.com client
+## Issue #1: Signal sender verso Autotrade
 
-**Obiettivo:** Creare l'interfaccia astratta `ExchangeBase` e il primo adapter concreto `CapitalClient` per Capital.com demo.
+**Obiettivo:** Modulo exchange che invia segnali di trading al webhook di Autotrade.
 
 **Deliverable:**
-- `exchange/base.py` con `ExchangeBase(ABC)` e dataclass comuni
-- `exchange/capital_client.py` con `CapitalClient` completo
-- Test unitari per import, istanziazione, URL demo/live
+- `exchange/signal_sender.py` con `SignalSender` e `SignalPayload`
+- Config `AUTOTRADE_WEBHOOK_URL`
+- Test unitari
 
 **Criteri completamento:**
-- `pytest tests/test_exchange.py` passa
-- Zero riferimenti a Hyperliquid nel codebase
+- `pytest` passa
+- Zero accessi diretti a broker nel codebase
 
 **Dipendenze:** Nessuna
 
@@ -34,9 +34,9 @@
 
 ---
 
-## Issue #3: Data ingestion via Capital.com
+## Issue #3: Data ingestion
 
-**Obiettivo:** Raccolta dati di mercato (candele, prezzi) tramite Capital.com REST API.
+**Obiettivo:** Raccolta dati di mercato (candele, prezzi) da fonti esterne.
 
 **Deliverable:**
 - Modulo `data/` con client per fetch candele e prezzi
@@ -44,10 +44,10 @@
 - Salvataggio su storage
 
 **Criteri completamento:**
-- Fetch dati da Capital.com demo funzionante
+- Fetch dati funzionante
 - Dati salvati correttamente nel database
 
-**Dipendenze:** Issue #1, Issue #2
+**Dipendenze:** Issue #2
 
 ---
 
@@ -69,27 +69,29 @@
 
 ## Issue #5: Strategy — Prompt builder e decision engine
 
-**Obiettivo:** Costruire il prompt per LLM e lo schema JSON di decisione.
+**Obiettivo:** Costruire il prompt per LLM e generare `SignalPayload` da inviare ad Autotrade.
 
 **Deliverable:**
 - Schema JSON decisione (action, size, confidence, reasoning)
 - Prompt builder con contesto mercato + indicatori + regole
 - Supporto multi-provider (OpenAI, Anthropic)
+- Conversione output LLM → `SignalPayload`
 
 **Criteri completamento:**
 - Schema JSON validato
 - Prompt deterministico su input fisso
 - Test unitari passano
 
-**Dipendenze:** Issue #3, Issue #4
+**Dipendenze:** Issue #1, Issue #3, Issue #4
 
 ---
 
 ## Mini Roadmap
 
 ```
-Issue #1 (Exchange) ──┐
-                      ├──> Issue #3 (Data) ──┐
-Issue #2 (Storage) ───┘                      ├──> Issue #5 (Strategy)
-                      Issue #4 (Indicators) ──┘
+Issue #1 (Signal Sender) ────────────────────┐
+                                              │
+Issue #2 (Storage) ──> Issue #3 (Data) ──────>├──> Issue #5 (Strategy)
+                                              │
+                       Issue #4 (Indicators) ─┘
 ```

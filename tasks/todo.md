@@ -1,13 +1,13 @@
-# TODO — Capital.com-first Roadmap
+# TODO — AI Trading Agent Roadmap
 
 ## In corso
 
-### Step 1. Exchange — Broker adapter layer e Capital.com client
-- [x] Interfaccia astratta `ExchangeBase` con metodi standard
-- [x] Dataclass comuni: `Order`, `Position`, `Instrument`, `AccountBalance`
-- [x] `CapitalClient` adapter con auth header-based e demo-first
-- [x] Test: import, istanziazione, URL demo vs live
-- [ ] Test integrazione con Capital.com demo (richiede credenziali)
+### Step 1. Exchange — Signal sender verso Autotrade
+- [x] `SignalSender` con invio JSON a webhook Autotrade
+- [x] `SignalPayload` dataclass con campi opzionali
+- [x] Config `AUTOTRADE_WEBHOOK_URL`
+- [x] Test unitari
+- [ ] Test integrazione con Autotrade in esecuzione
 
 ## Da fare
 
@@ -17,11 +17,11 @@
 - Migration iniziale (Alembic o script SQL)
 - Test: connessione, CRUD su ogni modello
 
-### Step 3. Data — Market data ingestion via Capital.com
-- Client wrapper per Capital.com REST API (candele, prezzi)
+### Step 3. Data — Market data ingestion
+- Client per raccolta dati di mercato (prezzi, candele)
 - Polling periodico
 - Salvataggio dati grezzi su `storage`
-- Test: fetch dati in demo, validazione schema
+- Test: fetch dati, validazione schema
 
 ### Step 4. Indicators — Indicatori tecnici
 - Calcolo su DataFrame pandas (RSI, EMA, MACD, Bollinger, ATR)
@@ -33,6 +33,7 @@
 - Schema JSON per la decisione (action, size, confidence, reasoning)
 - Prompt builder che assembla: contesto mercato + indicatori + regole
 - Supporto multi-provider LLM (OpenAI, Anthropic)
+- Output: `SignalPayload` da inviare via `SignalSender`
 - Test: validazione schema, prompt deterministico su input fisso
 
 ## Completati
