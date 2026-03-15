@@ -2,13 +2,6 @@
 
 ## In corso
 
-### Step 1. Exchange — Signal sender verso Autotrade
-- [x] `SignalSender` con invio JSON a webhook Autotrade
-- [x] `SignalPayload` dataclass con campi opzionali
-- [x] Config `AUTOTRADE_WEBHOOK_URL`
-- [x] Test unitari
-- [ ] Test integrazione con Autotrade in esecuzione
-
 ## Da fare
 
 ### Step 2. Storage — Setup database e modelli SQLAlchemy
@@ -37,3 +30,10 @@
 - Test: validazione schema, prompt deterministico su input fisso
 
 ## Completati
+
+### Step 1. Exchange — Signal sender verso Autotrade
+- [x] `SignalSender` con invio JSON a webhook Autotrade
+- [x] `SignalPayload` dataclass con campi opzionali
+- [x] Config `AUTOTRADE_WEBHOOK_URL` (default `http://ollasrv:8080/webhook/signal`)
+- [x] Test contratto webhook (chiavi obbligatorie, tipi, campi opzionali)
+- [x] Test `SignalSender.send()` con mock httpx (payload, errori HTTP, errori connessione)

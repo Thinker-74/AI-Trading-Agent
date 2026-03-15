@@ -1,17 +1,25 @@
 # GitHub Issues — AI Trading Agent Roadmap
 
-## Issue #1: Signal sender verso Autotrade
+Flusso: **AI decides → Signal Sender → Autotrade webhook → broker (Capital.com, Binance, MT4)**
+
+L'agente non accede direttamente a nessun broker. Genera segnali e li invia ad Autotrade via `POST /webhook/signal`.
+
+---
+
+## Issue #1: Signal sender verso Autotrade [COMPLETATA]
 
 **Obiettivo:** Modulo exchange che invia segnali di trading al webhook di Autotrade.
 
 **Deliverable:**
 - `exchange/signal_sender.py` con `SignalSender` e `SignalPayload`
-- Config `AUTOTRADE_WEBHOOK_URL`
-- Test unitari
+- Config `AUTOTRADE_WEBHOOK_URL` (default `http://ollasrv:8080/webhook/signal`)
+- Test contratto webhook (chiavi obbligatorie, tipi, campi opzionali assenti quando None)
+- Test `SignalSender.send()` con mock httpx (payload corretto, errori HTTP, errori connessione)
 
 **Criteri completamento:**
-- `pytest` passa
-- Zero accessi diretti a broker nel codebase
+- [x] `pytest` — 18 test passano
+- [x] Zero accessi diretti a broker nel codebase
+- [x] Payload conforme allo schema Autotrade: `{symbol, direction, entry_price?, stop_loss?, take_profits?}`
 
 **Dipendenze:** Nessuna
 
@@ -25,6 +33,7 @@
 - Modelli SQLAlchemy: `Candle`, `Trade`, `Signal`, `Position`
 - Engine e session factory
 - Migration iniziale
+- Modello `SentSignal` per tracciare i segnali inviati ad Autotrade
 
 **Criteri completamento:**
 - Test CRUD su ogni modello passano
@@ -75,7 +84,7 @@
 - Schema JSON decisione (action, size, confidence, reasoning)
 - Prompt builder con contesto mercato + indicatori + regole
 - Supporto multi-provider (OpenAI, Anthropic)
-- Conversione output LLM → `SignalPayload`
+- Conversione output LLM → `SignalPayload` → `SignalSender.send()`
 
 **Criteri completamento:**
 - Schema JSON validato
@@ -89,9 +98,9 @@
 ## Mini Roadmap
 
 ```
-Issue #1 (Signal Sender) ────────────────────┐
-                                              │
-Issue #2 (Storage) ──> Issue #3 (Data) ──────>├──> Issue #5 (Strategy)
-                                              │
-                       Issue #4 (Indicators) ─┘
+Issue #1 (Signal Sender) [DONE] ────────────┐
+                                             │
+Issue #2 (Storage) ──> Issue #3 (Data) ─────>├──> Issue #5 (Strategy)
+                                             │
+                       Issue #4 (Indicators) ┘
 ```
