@@ -15,6 +15,14 @@ load_dotenv(_env_path)
 class Settings:
     app_name: str = "ai-trading-agent"
 
+    # Superbot (LLM locale via Ollama)
+    superbot_url: str = field(
+        default_factory=lambda: os.getenv("SUPERBOT_URL", "http://ollasrv:5000")
+    )
+    superbot_mode: str = field(
+        default_factory=lambda: os.getenv("SUPERBOT_MODE", "trading")
+    )
+
     # Autotrade webhook
     autotrade_webhook_url: str = field(
         default_factory=lambda: os.getenv(
@@ -28,10 +36,6 @@ class Settings:
             "DATABASE_URL", "postgresql://user:password@localhost:5432/ai_trading"
         )
     )
-
-    # LLM
-    openai_api_key: str = field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
-    anthropic_api_key: str = field(default_factory=lambda: os.getenv("ANTHROPIC_API_KEY", ""))
 
     # App
     log_level: str = field(default_factory=lambda: os.getenv("LOG_LEVEL", "INFO"))

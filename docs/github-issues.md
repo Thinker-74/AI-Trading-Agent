@@ -1,8 +1,8 @@
 # GitHub Issues — AI Trading Agent Roadmap
 
-Flusso: **AI decides → Signal Sender → Autotrade webhook → broker (Capital.com, Binance, MT4)**
+Flusso: **Data → Indicators → Strategy/Superbot (LLM locale) → Signal Sender → Autotrade → broker**
 
-L'agente non accede direttamente a nessun broker. Genera segnali e li invia ad Autotrade via `POST /webhook/signal`.
+Zero API cloud. Zero accesso diretto ai broker.
 
 ---
 
@@ -12,14 +12,12 @@ L'agente non accede direttamente a nessun broker. Genera segnali e li invia ad A
 
 **Deliverable:**
 - `exchange/signal_sender.py` con `SignalSender` e `SignalPayload`
-- Config `AUTOTRADE_WEBHOOK_URL` (default `http://ollasrv:8080/webhook/signal`)
-- Test contratto webhook (chiavi obbligatorie, tipi, campi opzionali assenti quando None)
-- Test `SignalSender.send()` con mock httpx (payload corretto, errori HTTP, errori connessione)
+- Config `AUTOTRADE_WEBHOOK_URL`
+- Test contratto webhook + test mock `SignalSender.send()`
 
 **Criteri completamento:**
-- [x] `pytest` — 18 test passano
+- [x] 18 test passano
 - [x] Zero accessi diretti a broker nel codebase
-- [x] Payload conforme allo schema Autotrade: `{symbol, direction, entry_price?, stop_loss?, take_profits?}`
 
 **Dipendenze:** Nessuna
 
@@ -76,19 +74,21 @@ L'agente non accede direttamente a nessun broker. Genera segnali e li invia ad A
 
 ---
 
-## Issue #5: Strategy — Prompt builder e decision engine
+## Issue #5: Strategy — Prompt builder + Superbot client + decision parser
 
-**Obiettivo:** Costruire il prompt per LLM e generare `SignalPayload` da inviare ad Autotrade.
+**Obiettivo:** Costruire il prompt, inviarlo a Superbot (LLM locale), parsare la decisione e inoltrarla ad Autotrade.
 
 **Deliverable:**
-- Schema JSON decisione (action, size, confidence, reasoning)
-- Prompt builder con contesto mercato + indicatori + regole
-- Supporto multi-provider (OpenAI, Anthropic)
-- Conversione output LLM → `SignalPayload` → `SignalSender.send()`
+- Prompt builder: contesto mercato + indicatori + regole risk management
+- Client Superbot: `POST /generate` con `{text, mode: "trading", stream: false}`
+- Parser: estrae e valida JSON dal campo `response` (stringa)
+- Schema decisione: `{action, symbol, direction, entry_price, stop_loss, take_profits, confidence, reasoning}`
+- Logica: `action != "HOLD"` → `SignalPayload` → `SignalSender.send()`
 
 **Criteri completamento:**
-- Schema JSON validato
 - Prompt deterministico su input fisso
+- Parsing corretto di risposte valide e invalide
+- Conversione a `SignalPayload` testata
 - Test unitari passano
 
 **Dipendenze:** Issue #1, Issue #3, Issue #4
@@ -100,7 +100,7 @@ L'agente non accede direttamente a nessun broker. Genera segnali e li invia ad A
 ```
 Issue #1 (Signal Sender) [DONE] ────────────┐
                                              │
-Issue #2 (Storage) ──> Issue #3 (Data) ─────>├──> Issue #5 (Strategy)
+Issue #2 (Storage) ──> Issue #3 (Data) ─────>├──> Issue #5 (Strategy + Superbot)
                                              │
                        Issue #4 (Indicators) ┘
 ```

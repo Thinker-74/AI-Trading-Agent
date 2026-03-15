@@ -22,12 +22,13 @@
 - Output: DataFrame arricchito con colonne indicatori
 - Test: valori noti su dati sintetici
 
-### Step 5. Strategy — Prompt builder e decision schema JSON
-- Schema JSON per la decisione (action, size, confidence, reasoning)
-- Prompt builder che assembla: contesto mercato + indicatori + regole
-- Supporto multi-provider LLM (OpenAI, Anthropic)
-- Output: `SignalPayload` da inviare via `SignalSender`
-- Test: validazione schema, prompt deterministico su input fisso
+### Step 5. Strategy — Prompt builder + Superbot client + parser risposta
+- Prompt builder: assembla contesto mercato + indicatori + regole risk management
+- Client Superbot: `POST http://ollasrv:5000/generate` con `{text, mode: "trading", stream: false}`
+- Parser: estrae JSON dalla risposta `response` (stringa → dict)
+- Schema decisione: `{action, symbol, direction, entry_price, stop_loss, take_profits, confidence, reasoning}`
+- Logica: se `action != "HOLD"` → converte in `SignalPayload` → `SignalSender.send()`
+- Test: prompt deterministico, parsing risposta valida/invalida, conversione a SignalPayload
 
 ## Completati
 
