@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+thumbs.db
+desktop.ini
+
+# Node (if dashboard uses it)
+node_modules/
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Mypy / Ruff
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
